@@ -86,7 +86,7 @@ def vacuna_form_api(request, _id=None):
                     response = requests.put(endpoint, data=form.cleaned_data, cookies=request.COOKIES)
                 else:
                     # Crear registro de una vacuna
-                    endpoint = '{endpoint}/api/vacuna/'.format(endpoint=settings.API_ENDPOINT, id=_id)
+                    endpoint = '{endpoint}/api/vacuna/'.format(endpoint=settings.API_ENDPOINT)
                     response = requests.post(endpoint, data=form.cleaned_data, cookies=request.COOKIES)
 
             except (ConnectionError, ConnectTimeout) as err:
