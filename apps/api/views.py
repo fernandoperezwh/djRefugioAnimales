@@ -2,15 +2,28 @@
 from django.db.models import Q
 from django.http import Http404
 # django rest framework packages
+from django.shortcuts import render
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 # local packages
 from apps.adopcion.models import Persona
 from apps.mascota.models import Vacuna, Mascota
 from apps.adopcion.serializers import PersonaSerializer
 from apps.mascota.serializers import VacunaSerializer, MascotaSerializer, EditMascotaSerializer
+
+
+def home(request):
+    access_token, refresh_token = None, None
+    if request.method == 'POST' and request.user.is_authenticated:
+        refresh = RefreshToken.for_user(request.user)
+        access_token, refresh_token = str(refresh.access_token), str(refresh)
+
+    return render(request, 'index.html', {
+        'user_access_token': access_token,
+        'user_refresh_token': refresh_token,
+    })
 
 
 # region Persona views
@@ -145,37 +158,4 @@ class MascotaDetail(APIView):
         instance = self.get_object(pk)
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-# endregion
-
-
-
-# region protected resources
-class PermissionMixin():
-    def get_permissions(self):
-        permission_classes = [IsAuthenticated]
-        return [permission() for permission in permission_classes]
-
-
-class PersonaPrivateList(PermissionMixin, PersonaList):
-    pass
-
-
-class VacunaPrivateList(PermissionMixin, VacunaList):
-    pass
-
-
-class MascotaPrivateList(PermissionMixin, MascotaList):
-    pass
-
-
-class PersonaPrivateDetail(PermissionMixin, PersonaDetail):
-    pass
-
-
-class VacunaPrivateDetail(PermissionMixin, VacunaDetail):
-    pass
-
-
-class MascotaPrivateDetail(PermissionMixin, MascotaDetail):
-    pass
 # endregion

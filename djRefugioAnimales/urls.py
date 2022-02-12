@@ -19,23 +19,22 @@ from django.contrib import admin
 # third party packages
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 # local packages
-from apps.mascota.views import MascotaListView
+
+from apps.api.views import home
 
 urlpatterns = [
     # region django urls
     url(r'^admin/', include(admin.site.urls)),
     # endregion
-
     # region third party urls
     url(r'^api/auth/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     url(r'^api/auth/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
     url(r'^api/auth/verify/$', TokenVerifyView.as_view(), name='token_verify'),
     # endregion
-
     # region local urls
-    url(r'^$', MascotaListView.as_view()),
-    url(r'^adopcion/',include('apps.adopcion.urls')),
-    url(r'^mascota/',include('apps.mascota.urls')),
+    url(r'^$', home, name='home'),
+    url(r'^a/', include('apps.adopcion.urls')),
+    url(r'^m/', include('apps.mascota.urls')),
     url(r'^api/', include('apps.api.urls'))
     # endregion
 ]
